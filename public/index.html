@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Resume Screening Platform</title>
+
+<style>
+body {
+  font-family: Arial;
+  background:#f4f6f9;
+  padding:30px;
+}
+
+h1 { text-align:center; }
+
+/* tabs */
+
+.tabs {
+  text-align:center;
+  margin-bottom:20px;
+}
+
+.tabbtn {
+  padding:12px 20px;
+  border:none;
+  border-radius:8px;
+  margin:5px;
+  cursor:pointer;
+  background:#e5e7eb;
+  font-size:14px;
+}
+
+.active {
+  background:#4f46e5;
+  color:white;
+}
+
+/* panels */
+
+.panel {
+  display:none;
+  background:white;
+  padding:25px;
+  border-radius:12px;
+  box-shadow:0 4px 12px rgba(0,0,0,0.08);
+  max-width:900px;
+  margin:0 auto 20px auto;
+}
+
+.show { display:block; }
+
+/* inputs */
+
+input, textarea {
+  width:100%;
+  padding:10px;
+  margin-top:10px;
+  border-radius:8px;
+  border:1px solid #ccc;
+  font-size:14px;
+}
+
+textarea { min-height:120px; }
+
+/* buttons */
+
+button {
+  background:#4f46e5;
+  color:white;
+  border:none;
+  padding:10px 16px;
+  border-radius:8px;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+button:hover { opacity:0.9; }
+
+/* results */
+
+.resume {
+  border-left:4px solid #4f46e5;
+  padding:12px;
+  margin-top:12px;
+  background:#fafafa;
+  border-radius:6px;
+}
+
+.score {
+  font-weight:bold;
+  color:#059669;
+}
+
+#status {
+  margin-top:10px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📄 Resume Screening Platform</h1>
+
+<!-- TABS -->
+
+<div class="tabs">
+  <button class="tabbtn active" onclick="showTab('student', this)">Student</button>
+  <button class="tabbtn" onclick="showTab('recruiter', this)">Recruiter</button>
+</div>
+
+<!-- STUDENT PANEL -->
+
+<div id="student" class="panel show">
+
+  <h3>Upload Resume</h3>
+
+  <input id="studentName" placeholder="Your full name">
+
+  <input type="file" id="file">
+
+  <button onclick="upload()">Upload Resume</button>
+
+  <div id="status"></div>
+
+</div>
+
+<!-- RECRUITER PANEL -->
+
+<div id="recruiter" class="panel">
+
+  <h3>Keyword Search</h3>
+
+  <input id="searchBox" placeholder="python, dbms, java">
+
+  <button onclick="search()">Search</button>
+  <button onclick="loadAll()">Show All</button>
+
+  <h3>Smart Ranking</h3>
+
+  <textarea id="jobDesc" placeholder="Paste job description here"></textarea>
+
+  <button onclick="rate()">Rank Resumes</button>
+
+<button onclick="viewShortlist()">View Shortlist</button>
+<button onclick="exportCSV()">Export Shortlist CSV</button>
+
+  <div id="results"></div>
+
+</div>
+
+<script src="app.js"></script>
+
+</body>
+</html>
