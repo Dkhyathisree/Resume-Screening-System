@@ -1,0 +1,187 @@
+--------------------------------------------------
+DBMS PROJECT — RESUME SCREENING PLATFORM
+SQL QUERY COLLECTION
+--------------------------------------------------
+
+----------------------------
+1. CREATE DATABASE
+----------------------------
+
+CREATE DATABASE resumes;
+
+
+----------------------------
+2. CANDIDATES TABLE
+----------------------------
+
+CREATE TABLE candidates (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  resume_text TEXT,
+  skills TEXT,
+  filename TEXT,
+  email TEXT,
+  phone TEXT,
+  summary TEXT
+);
+
+
+----------------------------
+3. SHORTLIST TABLE
+----------------------------
+
+CREATE TABLE shortlist (
+  id SERIAL PRIMARY KEY,
+  candidate_id INT REFERENCES candidates(id),
+  added_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+
+--------------------------------------------------
+SCHEMA UPDATES (USED DURING DEVELOPMENT)
+--------------------------------------------------
+
+ALTER TABLE candidates ADD COLUMN skills TEXT;
+ALTER TABLE candidates ADD COLUMN filename TEXT;
+ALTER TABLE candidates ADD COLUMN email TEXT;
+ALTER TABLE candidates ADD COLUMN phone TEXT;
+ALTER TABLE candidates ADD COLUMN summary TEXT;
+
+
+--------------------------------------------------
+INSERT OPERATIONS
+--------------------------------------------------
+
+-- Insert parsed resume record
+
+INSERT INTO candidates
+(name, resume_text, skills, filename, email, phone, summary)
+VALUES
+($1,$2,$3,$4,$5,$6,$7);
+
+
+--------------------------------------------------
+READ QUERIES (RECRUITER VIEW)
+--------------------------------------------------
+
+-- List all resumes
+
+SELECT id,name,skills,filename,email,phone,summary,
+LEFT(resume_text,200) AS preview
+FROM candidates
+ORDER BY id DESC;
+
+
+--------------------------------------------------
+SEARCH QUERY (KEYWORD SEARCH)
+--------------------------------------------------
+
+SELECT id,name,skills,filename,email,phone,summary,
+LEFT(resume_text,200) AS preview
+FROM candidates
+WHERE resume_text ILIKE '%python%';
+
+
+--------------------------------------------------
+FILTER BY SKILL
+--------------------------------------------------
+
+SELECT *
+FROM candidates
+WHERE skills ILIKE '%java%';
+
+
+--------------------------------------------------
+DELETE CANDIDATE
+--------------------------------------------------
+
+DELETE FROM candidates
+WHERE id = $1;
+
+
+--------------------------------------------------
+SHORTLIST OPERATIONS
+--------------------------------------------------
+
+-- Add candidate to shortlist
+
+INSERT INTO shortlist(candidate_id)
+VALUES ($1);
+
+
+-- View shortlisted candidates
+
+SELECT c.id, c.name, c.skills, c.email, c.phone
+FROM candidates c
+JOIN shortlist s
+ON c.id = s.candidate_id
+ORDER BY s.added_at DESC;
+
+
+--------------------------------------------------
+SHORTLIST EXPORT DATA QUERY
+--------------------------------------------------
+
+SELECT c.id, c.name, c.email, c.phone, c.skills
+FROM candidates c
+JOIN shortlist s
+ON c.id = s.candidate_id
+ORDER BY s.added_at DESC;
+
+
+--------------------------------------------------
+RANKING DATA FETCH (FOR SCORING IN SERVER)
+--------------------------------------------------
+
+SELECT id,name,resume_text,skills,filename,email,phone,summary
+FROM candidates;
+
+
+--------------------------------------------------
+UTILITY / CHECK QUERIES
+--------------------------------------------------
+
+-- View table structure
+
+SELECT column_name
+FROM information_schema.columns
+WHERE table_name = 'candidates';
+
+
+-- Count resumes
+
+SELECT COUNT(*) FROM candidates;
+
+
+-- Count shortlisted
+
+SELECT COUNT(*) FROM shortlist;
+
+
+--------------------------------------------------
+CLEANUP QUERIES (OPTIONAL)
+--------------------------------------------------
+
+-- Remove rows missing files
+
+DELETE FROM candidates
+WHERE filename IS NULL;
+
+
+-- Clear shortlist
+
+DELETE FROM shortlist;
+
+
+--------------------------------------------------
+INDEXING (OPTIONAL PERFORMANCE UPGRADE)
+--------------------------------------------------
+
+CREATE INDEX idx_resume_text
+ON candidates
+USING gin (to_tsvector('english', resume_text));
+
+
+--------------------------------------------------
+END OF DBMS QUERY FILE
+--------------------------------------------------
